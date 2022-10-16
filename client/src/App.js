@@ -12,7 +12,39 @@ const darkTheme = createTheme({
 });
 
 function CogFallaciesComponent(props) {
-  return <h1>Struggling with spiraling negative thoughts? </h1>;
+  const [data, setData] = React.useState(null);
+  const [statement, setStatement] = React.useState('');
+
+  const handleStatementChange = (statement) => {
+    setStatement(statement.target.value);
+  }
+
+  const handleSubmit = (abc) => {
+    abc.preventDefault();
+    setData(null);
+    fetch(`/fallacies-api?statement=${statement}`)
+      .then((res) => res.json())
+      .then((data) => setData(`${data.generations[0].text.slice(0,-2)}`));
+  }
+
+  return <FormControl sx={{ width: '70ch' }}>
+          <p>
+            Struggling with spiraling negative thoughts? Let's try to call out and 
+            crush those cognitive fallacies.
+          </p>
+          <Card>
+            <br/>
+            <TextField id="outlined-basic" variant="outlined" label="Put your troubling statement here"
+              helperText="ex: My boss told me she liked my presentation, but I think she's just being nice."
+              value={statement} onChange={handleStatementChange}/><br/><br/>
+            <Button variant="contained" onClick={handleSubmit}>Submit</Button>
+                <br/><br/>  
+          </Card><br/>
+
+          <TextField id="filled-basic" variant="filled"
+              value={!data ? '' : data}/><br/>
+
+        </FormControl>;
 }
 
 function AssertComponent(props) {
@@ -32,7 +64,7 @@ function AssertComponent(props) {
   const handleSubmit = (abc) => {
     abc.preventDefault();
     setData(null);
-    fetch(`/api?situation=${situation}&text=${draftText}`)
+    fetch(`/assert-api?situation=${situation}&text=${draftText}`)
       .then((res) => res.json())
       .then((data) => setData(`${data.generations[0].text.slice(0,-1)}`));
   }
@@ -54,7 +86,7 @@ function AssertComponent(props) {
           </Card><br/>
 
           <TextField id="filled-basic" variant="filled"
-              value={!data ? 'Assertified statement will be here' : data}/><br/>
+              value={!data ? '' : data}/><br/>
 
         </FormControl>;
 }
@@ -98,7 +130,7 @@ function App() {
       <CssBaseline />
       <div className="App">
         <header className="App-header">
-          <h1>Work Up Assert 💦</h1>
+          <h1>Work Those Asserts 💦</h1>
           
           <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <Tabs value={value} onChange={handleTabChange} aria-label="basic tabs example">
